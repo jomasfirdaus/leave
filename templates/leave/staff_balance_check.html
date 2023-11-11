@@ -1,0 +1,61 @@
+
+							
+							<div class="row">
+								{% for data in data_leave %}
+									<div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+										<div class="card">
+											<div class="card-body">
+												<div class="metric-value d-inline-block">
+													<h3 class="mb-1">Balance</h1>
+												</div>
+												<div class="metric-label d-inline-block float-right text-success font-weight-bold">
+														{{data.balance_leave}}
+														{% if data.balance_leave > 1 %}
+															days
+														{% else %}
+															day
+														{% endif %}
+													</span>
+												</div><br>
+												<div class="metric-value d-inline-block">
+													<h3 class="mb-1">Used</h1>
+												</div>
+												<div class="metric-label d-inline-block float-right text-success font-weight-bold">
+														{{data.history_leave}}
+														{% if data.total_history_leave > 1 %}
+															days
+														{% else %}
+															day
+														{% endif %}
+													</span>
+												</div><br>
+												<div class="metric-value d-inline-block">
+													<h3 class="mb-1">Total</h1>
+												</div>
+												<div class="metric-label d-inline-block float-right text-success font-weight-bold">
+														{{data.total_leave}}
+														{% if data.total_leave > 1 %}
+															days
+														{% else %}
+															day
+														{% endif %}
+													</span>
+												</div><br>
+												<div class="metric-value d-inline-block">
+													<h3 class="mb-1">Pending</h1>
+												</div>
+												<div class="metric-label d-inline-block float-right text-success font-weight-bold">
+														{{data.pending_leave}}
+														{% if data.pending_leave > 1 %}
+															days
+														{% else %}
+															day
+														{% endif %}
+													</span>
+												</div><hr>
+												<h5 class="text-muted">{{data.leave_name}}</h5>
+											</div>
+										</div>
+									</div>
+								{% endfor %}
+							</div>

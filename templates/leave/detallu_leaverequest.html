@@ -1,0 +1,80 @@
+{% extends 'utilizador/layout.html' %}
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+{% load fegt9_mpg_proteksaun_url %}
+
+
+		<!-- ============================================================== -->
+						<!-- pageheader  -->
+						<!-- ============================================================== -->
+						<div class="row">
+							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+								<div class="page-header">
+									<h2 class="pageheader-title">Detallu husi Leave Request  </h2>
+									<p class="pageheader-text">Nulla euismod urna eros, sit amet scelerisque torton lectus vel mauris facilisis faucibus at enim quis massa lobortis rutrum.</p>
+									<div class="page-breadcrumb">
+										<nav aria-label="breadcrumb">
+											<ol class="breadcrumb">
+												<li class="breadcrumb-item"><a href="#" class="breadcrumb-link">CVTL</a></li>
+												<li class="breadcrumb-item active" aria-current="page">Hris Painel</li>
+											</ol>
+
+                                            
+										</nav>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- ============================================================== -->
+						<!-- end pageheader  -->
+						<!-- ============================================================== -->
+						<div class="ecommerce-widget">
+	
+				
+                            <div class="row">
+                                <div class="  col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="card">
+                                        <div class="card-header p-4">
+                                             <a class="pt-2 d-inline-block" href="index.html">
+												<b>Leave Type </b> : {{leaverequest.leavetype}} <br>
+												<b>Start Date:</b> {{leaverequest.start_date}} <br>
+												<b>End Date:</b> {{leaverequest.end_date}} </a> <br>
+												<b>Start Work :</b> {{leaverequest.start_work_date}} </a>
+                                           
+                                            <div class="float-right"> <h3 class="mb-0">Leave Request</h3>
+												{{leaverequest.created_at}}</div>
+                                        </div>
+                                        <div class="card-footer bg-white">
+                                            <p class="mb-0">2983 Glenview Drive Corpus Christi, TX 78476</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+						
+
+
+							<div class="row">
+                                <div class="  col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="card">
+                               
+                                        <div class="card-body" style="background-color: #efeff6;">
+                              
+								
+
+			{% include 'timelineleave.html' %}
+									   </div>
+									  
+                                        </div>
+                                        <div class="card-footer bg-white">
+                                            <p class="mb-0">2983 Glenview Drive Corpus Christi, TX 78476</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+						</div>
+
+
+
+{% endblock content %}

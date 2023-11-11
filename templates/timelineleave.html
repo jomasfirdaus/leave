@@ -1,0 +1,100 @@
+<center><h4 class="card-header">Timeline </h4></center>
+{% load fegt9_mpg_proteksaun_url %}
+<section class="cd-timeline js-cd-timeline">
+	<div class="cd-timeline__container">
+
+
+        <div class="cd-timeline__block js-cd-block">
+			<div class="cd-timeline__img cd-timeline__img--picture js-cd-img">
+				<img src="/media/icon/aseita.png" alt="Picture"> 
+			</div>
+			<div class="cd-timeline__content js-cd-content">
+				<b>Request by</b> : {{leaverequest.created_by.first_name}} {{leaverequest.created_by.last_name}} <br>
+				{{leaverequest.leavetype}}<br>
+				{{leaverequest.created_at}}
+			</div>
+			<!-- cd-timeline__content -->
+		</div>
+
+        
+
+
+        {% for dados in timeline %}
+		<div class="cd-timeline__block js-cd-block">
+			<div class="cd-timeline__img cd-timeline__img--picture js-cd-img">
+	
+{% if dados.status == "Acepted" %}   <img src="/media/icon/aseita.png" alt="Picture">  {% elif dados.status == "Review"  %} <img src="/media/icon/review.png" alt="Picture">  {% elif  dados.status == "Rejected" %}  <img src="/media/icon/rejeita.png" alt="Picture">     {% endif %}
+           
+          
+
+        	
+
+   
+     
+       
+          
+			</div>
+			<!-- cd-timeline__img -->
+			<div class="cd-timeline__content js-cd-content">
+		
+                
+
+                  {% if forloop.last %}
+                <b> Aprovasaun ikus ha sr/sra  </b>   
+                  {% endif %}
+                    
+                      {{dados.employeeuser.employee.first_name}} {{dados.employeeuser.employee.last_name}} | 	  {{dados.status}} <br>
+                      <font color="black"> Pedidu  hato iha data : {{dados.created_at}} </font>'
+        
+            {% if dados.employeeuser.user == request.user %}
+               
+            
+            {% if forloop.first %}
+                  <br>
+        <span class="cd-timeline__date ">  
+          {% if dados.status == "Acepted" %}
+          Request Accepted
+        {% else %}
+          <a href="{% url 'leave:aceptedleaverequest' dados.id|encrypt_id_tag %}" id="acceptedButton" class="btn btn-primary btn-sm">Acepted
+          <a href="{% url 'leave:rijectedleaverequest' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm">Rejected</a>
+        {% endif %}  </span>
+                {% else %}
+
+
+
+                        {% if dados.id|encrypt_id_tag|cekaprovasaunrequesulukleave == "Acepted" %}
+<br>
+                    <span class="cd-timeline__date ">  
+
+                          {% if dados.status == "Acepted" %}
+                            Request Accepted
+                          {% else %}
+                            <a href="{% url 'leave:aceptedleaverequest' dados.id|encrypt_id_tag %}" id="acceptedButton" class="btn btn-primary btn-sm">Acepted</a>&nbsp;
+                            <a href="{% url 'leave:rijectedleaverequest' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm">Rejected</a>
+                         {% endif %}
+                      </span>
+                        {% endif %}
+               {% endif %}
+
+            {% endif %}
+        
+          	
+
+               {% comment %} <span class="cd-timeline__date ">  
+               <font color="black"> Pedidu  hato iha data : {{dados.created_at}} </font>'
+               </span> {% endcomment %}
+                
+			</div>
+			<!-- cd-timeline__content -->
+	    	</div>
+
+        {% endfor %}
+
+
+        
+
+		<!-- cd-timeline__block -->
+	</div>
+</section>
+
+

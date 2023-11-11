@@ -1,0 +1,157 @@
+{% extends 'utilizador/layout.html' %}
+{% block content %}
+{% load fegt9_mpg_proteksaun_url %}
+
+		<!-- ============================================================== -->
+						<!-- pageheader  -->
+						<!-- ============================================================== -->
+						<div class="row">
+							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+								<div class="page-header">
+									<h2 class="pageheader-title">Leave</h2>
+									<p class="pageheader-text">Nulla euismod urna eros, sit amet scelerisque torton lectus vel mauris facilisis faucibus at enim quis massa lobortis rutrum.</p>
+									<div class="page-breadcrumb">
+										<nav aria-label="breadcrumb">
+											<ol class="breadcrumb">
+												<li class="breadcrumb-item"><a href="#" class="breadcrumb-link">CVTL</a></li>
+												<li class="breadcrumb-item active" aria-current="page">Hris Painel</li>
+											</ol>
+
+                                            
+										</nav>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- ============================================================== -->
+						<!-- end pageheader  -->
+						<!-- ============================================================== -->
+						<div class="ecommerce-widget">
+
+							
+							
+							<div class="row">
+								
+								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+										<div class="card">
+												<h5 class="card-header text-muted">Balance Leave</h5>
+												<div class="metric-value d-inline-block">
+													<div class="table-responsive">
+														<table class="table table-sm">
+															<thead class="bg-light">
+																<tr class="border-0">
+																	<th class="border-0">Nu</th>
+																	<th class="border-0">Leave Type</th>
+																	<th class="border-0">Balance</th>
+																	<th class="border-0">Pending</th>
+																	<th class="border-0">Available</th>
+															
+																</tr>
+															</thead>
+															<tbody>
+																{% for dados in data_leave %}
+																<tr>
+																
+																	<td>{{forloop.counter}}</td>
+																	<td> {{dados.leave_name}}</td>
+																	<td>{{dados.balance_leave}} 
+																		{% if dados.balance_leave > 1 %}
+																			days
+																		{% else %}
+																			day
+																		{% endif %}
+																	</td>
+																	<td>{{dados.pending_leave}} 
+																		{% if dados.pending_leave > 1 %}
+																			days
+																		{% else %}
+																			day
+																		{% endif %}
+																	</td>
+																	<td>{{dados.available_leave}} 
+																		{% if dados.available_leave > 1 %}
+																			days
+																		{% else %}
+																			day
+																		{% endif %}
+																	</td>
+																</tr>
+																{% endfor %}
+															
+															</tbody>
+														</table>
+													</div>
+												</div>
+										</div>
+									</div>
+								
+							</div>
+				
+							<div class="row">
+								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+									<!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12"> -->
+									<div class="card">
+										<h5 class="card-header">History Leave  <a href="{% url 'leave:requestleave' %}" class="btn btn-primary btn-sm float-right ">  <i class="far fa-paper-plane"></i> Request Leave</a></h5>      
+                                        
+                                     
+										<div class="card-body p-0">
+											<div class="table-responsive">
+												<table class="table table-sm">
+													<thead class="bg-light">
+														<tr class="border-0">
+															<th class="border-0">Nu</th>
+															<th class="border-0">Leave Type</th>
+															<th class="border-0">Start Date</th>
+															<th class="border-0">End Date</th>
+															<th class="border-0">Start Work Date</th>
+															<th class="border-0">Status</th>
+															<th class="border-0">#</th>
+													
+														</tr>
+													</thead>
+													<tbody>
+														{% if dadosta %}
+															{% for dados in dadosta %}
+															<tr>
+															
+																<td>{{forloop.counter}}</td>
+																<td>{{dados.leavetype}}</td>
+																<td>{{dados.start_date}}</td>
+															
+																<td>{{dados.end_date}}</td>
+																<td>{{dados.start_work_date}}</td>
+																<td>
+																	{% if dados.is_draft %}
+																		Draft | <a href="{% url 'leave:sendleaverequest' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm" > Send  <i class="far fa-paper-plane"></i>  </a>
+																	{% else %}
+																		{% if dados.is_aproved %}
+																			Aproved
+																		{% else %}
+																			Pending
+																		{% endif %}
+																	{% endif %}
+																</td>																													
+																<td>
+																	{% if dados.is_draft %}
+																		<a href="{% url 'leave:cancelLeaveRequest' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm" > Cancel <i class="fas fa-window-close"></i> </a> | 
+																		<a href="{% url 'leave:editrequestleave' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm" > Edit <i class="fas fa-edit"></i> </a> | 
+																	{% endif %}
+																	<a href="{% url 'leave:detalluleaverequest' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm" > Detail </a>
+																</td>
+															</tr>
+															{% endfor %}
+														{% else %}
+															<tr>
+																<td colspan="7" align="center">No Leave were taken</td>
+															</tr>
+														{% endif %}
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+{% endblock content %}
