@@ -10,8 +10,8 @@ from leave.models import *
 class RequestLeaveForm(forms.ModelForm):
     class Meta:
         model = LeaveRequest
-        fields = 'leavetype','start_date','end_date','start_work_date'  # You can specify the fields you want to include if needed
-        exclude = ['contract','hashed']
+        fields = 'category','leavetype','start_date','end_date','start_work_date'  # You can specify the fields you want to include if needed
+        exclude = ['contract']
 
     def __init__(self, *args, **kwargs):
         super(RequestLeaveForm, self).__init__(*args, **kwargs)
@@ -19,6 +19,11 @@ class RequestLeaveForm(forms.ModelForm):
         # Create a form helper and specify the layout
         self.helper = FormHelper()
         self.helper.layout = Layout(
+
+            Row(
+                Column('category', css_class='col-md-6'),
+
+            ),
 
             Row(
                 Column('leavetype', css_class='col-md-6'),
@@ -41,8 +46,10 @@ class RequestLeaveForm(forms.ModelForm):
             ),
         )
 
-        # Add CSS classes to form fields if needed
-        self.fields['leavetype'].widget.attrs['class'] = 'form-control'
-        self.fields['start_date'].widget.input_type = 'date'
-        self.fields['end_date'].widget.input_type = 'date'
-        self.fields['start_work_date'].widget.input_type = 'date'
+        # Menambahkan class CSS ke field form jika diperlukan
+        for field_name in ['category','leavetype', 'start_date', 'end_date', 'start_work_date']:
+            self.fields[field_name].widget.attrs['class'] = 'form-control'
+            if field_name != 'category':
+                self.fields[field_name].widget.attrs['disabled'] = 'disabled'
+            if 'date' in field_name:
+                self.fields[field_name].widget.input_type = 'date'

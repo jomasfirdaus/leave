@@ -42,8 +42,9 @@ class LeaveType(models.Model):
 
 class LeaveRequest(models.Model):
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, null=True, blank=False, related_name="LeaveRequestcontract")
+    category = models.CharField(choices=[('0','Part Day'), ('1','Multiple Days'), ('2','Half Day')], max_length=1)
     leavetype = models.ForeignKey(LeaveType, on_delete=models.CASCADE, null=True, blank=False, related_name="LeaveRequestleavetype")
-    start_date = models.DateField(null=True, blank=True)
+    start_date = models.DateField(null=False, blank=False)
     end_date = models.DateField(null=True, blank=True)
     start_work_date = models.DateField(null=True, blank=True)
     is_draft = models.BooleanField(default=True)

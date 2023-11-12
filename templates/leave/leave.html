@@ -21,6 +21,13 @@
 										</nav>
 									</div>
 								</div>
+								<div class="page-header">
+									{% if messages %}
+										{% for message in messages %}
+											{{message}}
+										{% endfor %}
+									{% endif %}
+								</div>
 							</div>
 						</div>
 						<!-- ============================================================== -->
@@ -117,7 +124,6 @@
 																<td>{{forloop.counter}}</td>
 																<td>{{dados.leavetype}}</td>
 																<td>{{dados.start_date}}</td>
-															
 																<td>{{dados.end_date}}</td>
 																<td>{{dados.start_work_date}}</td>
 																<td>

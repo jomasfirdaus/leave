@@ -58,6 +58,57 @@
                             </div>
 						
 						</div>
+						<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+						<script>
+							$(document).ready(function () {
+
+								// Sembunyikan leavetype dan nonaktifkan secara awal
+								$('#id_leavetype').closest('.form-group').hide();
+								$('#id_leavetype').prop('disabled', true);
+								
+								// Sembunyikan start_date dan nonaktifkan secara awal
+								$('#id_start_date').closest('.form-group').hide();
+								$('#id_start_date').prop('disabled', true);
+
+								// Sembunyikan end_date dan nonaktifkan secara awal
+								$('#id_end_date').closest('.form-group').hide();
+								$('#id_end_date').prop('disabled', true);
+
+								// Sembunyikan start_work_date dan nonaktifkan secara awal
+								$('#id_start_work_date').closest('.form-group').hide();
+								$('#id_start_work_date').prop('disabled', true);
+							
+								// Pada perubahan category
+								$('#id_category').change(function () {
+									if ($(this).val() === '0') {
+										// Jika Part Day dipilih, aktifkan start_date dan start_work_date, sembunyikan end_date
+										$('#id_leavetype').prop('disabled', false).closest('.form-group').show();
+										$('#id_start_date').prop('disabled', false).closest('.form-group').show();
+										$('#id_end_date').prop('disabled', true).closest('.form-group').hide();
+										$('#id_start_work_date').prop('disabled', false).closest('.form-group').show();
+									} else if ($(this).val() === '1') {
+										// Jika Multiple Days dipilih, aktifkan start_date, end_date, dan start_work_date
+										$('#id_leavetype').prop('disabled', false).closest('.form-group').show();
+										$('#id_start_date').prop('disabled', false).closest('.form-group').show();
+										$('#id_end_date').prop('disabled', false).closest('.form-group').show();
+										$('#id_start_work_date').prop('disabled', false).closest('.form-group').show();
+									}else if ($(this).val() === '2') {
+										// Jika Half Day dipilih, aktifkan start_date, sembunyikan end_date dan start_work_date
+										$('#id_leavetype').prop('disabled', false).closest('.form-group').show();
+										$('#id_start_date').prop('disabled', false).closest('.form-group').show();
+										$('#id_end_date').prop('disabled', true).closest('.form-group').hide();
+										$('#id_start_work_date').prop('disabled', true).closest('.form-group').hide();
+									}else {
+										// Jika Multiple Days dipilih, aktifkan start_date, end_date, dan start_work_date
+										$('#id_leavetype').prop('disabled', false).closest('.form-group').hide();
+										$('#id_start_date').prop('disabled', false).closest('.form-group').hide();
+										$('#id_end_date').prop('disabled', true).closest('.form-group').hide();
+										$('#id_start_work_date').prop('disabled', true).closest('.form-group').hide();
+									}
+								});
+							});
+						  </script>
+						  
 
 
 
