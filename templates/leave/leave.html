@@ -15,6 +15,7 @@
 											<ol class="breadcrumb">
 												<li class="breadcrumb-item"><a href="#" class="breadcrumb-link">CVTL</a></li>
 												<li class="breadcrumb-item active" aria-current="page">Hris Painel</li>
+												<li class="breadcrumb-item" aria-current="page"><a href="{% url 'mytask:listamytask' %}">My Task</a></li>
 											</ol>
 
                                             
@@ -130,11 +131,18 @@
 																	{% if dados.is_draft %}
 																		Draft | <a href="{% url 'leave:sendleaverequest' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm" > Send  <i class="far fa-paper-plane"></i>  </a>
 																	{% else %}
-																		{% if dados.is_aproved %}
-																			Aproved
-																		{% else %}
-																			Pending
-																		{% endif %}
+																		{% if dados.RequestLeaveAproveleaverequest %}
+																			{% for request_leave_approve in dados.RequestLeaveAproveleaverequest.all %}
+																				{% if request_leave_approve.status == 'Acepted' %}
+																					Aproved: 
+																				{% elif request_leave_approve.status == 'Rejected' %}
+																					Rejected: 
+																				{% elif request_leave_approve.status == 'Review' %}
+																					Pending: 
+																				{% endif %}
+																				{{request_leave_approve.contract.position}} {{request_leave_approve.contract.department}} <br>
+																			{% endfor %}
+																		{% endif %}																															
 																	{% endif %}
 																</td>																													
 																<td>

@@ -48,6 +48,7 @@ class LeaveRequest(models.Model):
     end_date = models.DateField(null=True, blank=True)
     start_work_date = models.DateField(null=True, blank=True)
     is_draft = models.BooleanField(default=True)
+    is_afternoon = models.BooleanField(default=False)
     
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="LeaveRequestcreatedby")
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -77,7 +78,7 @@ class LeaveRequest(models.Model):
 
 class RequestLeaveAprove(models.Model):
     leaverequest = models.ForeignKey(LeaveRequest, on_delete=models.CASCADE, null=True, blank=False, related_name="RequestLeaveAproveleaverequest")
-    employeeuser = models.ForeignKey(EmployeeUser, on_delete=models.CASCADE, null=True, blank=False, related_name="RequestLeaveAproveuser")
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, null=True, blank=False, related_name="RequestLeaveAproveuser")
     status = models.CharField(choices=[('Review','Review'),('Acepted','Acepted'),('Rejected','Rejected')],max_length=30, null=True, blank=True)
     description = models.TextField(null=False, blank=False)
 

@@ -77,6 +77,10 @@
 								// Sembunyikan start_work_date dan nonaktifkan secara awal
 								$('#id_start_work_date').closest('.form-group').hide();
 								$('#id_start_work_date').prop('disabled', true);
+
+								// Sembunyikan start_work_date dan nonaktifkan secara awal
+								$('#id_is_afternoon').closest('.form-group').hide();
+								$('#id_is_afternoon').prop('disabled', true);
 							
 								// Pada perubahan category
 								$('#id_category').change(function () {
@@ -84,26 +88,40 @@
 										// Jika Part Day dipilih, aktifkan start_date dan start_work_date, sembunyikan end_date
 										$('#id_leavetype').prop('disabled', false).closest('.form-group').show();
 										$('#id_start_date').prop('disabled', false).closest('.form-group').show();
+										$('#id_is_afternoon').prop('disabled', false).closest('.form-group').hide();
 										$('#id_end_date').prop('disabled', true).closest('.form-group').hide();
 										$('#id_start_work_date').prop('disabled', false).closest('.form-group').show();
 									} else if ($(this).val() === '1') {
 										// Jika Multiple Days dipilih, aktifkan start_date, end_date, dan start_work_date
 										$('#id_leavetype').prop('disabled', false).closest('.form-group').show();
 										$('#id_start_date').prop('disabled', false).closest('.form-group').show();
+										$('#id_is_afternoon').prop('disabled', false).closest('.form-group').hide();
 										$('#id_end_date').prop('disabled', false).closest('.form-group').show();
 										$('#id_start_work_date').prop('disabled', false).closest('.form-group').show();
 									}else if ($(this).val() === '2') {
 										// Jika Half Day dipilih, aktifkan start_date, sembunyikan end_date dan start_work_date
 										$('#id_leavetype').prop('disabled', false).closest('.form-group').show();
 										$('#id_start_date').prop('disabled', false).closest('.form-group').show();
+										$('#id_is_afternoon').prop('disabled', false).closest('.form-group').show();
 										$('#id_end_date').prop('disabled', true).closest('.form-group').hide();
 										$('#id_start_work_date').prop('disabled', true).closest('.form-group').hide();
 									}else {
 										// Jika Multiple Days dipilih, aktifkan start_date, end_date, dan start_work_date
 										$('#id_leavetype').prop('disabled', false).closest('.form-group').hide();
 										$('#id_start_date').prop('disabled', false).closest('.form-group').hide();
+										$('#id_is_afternoon').prop('disabled', false).closest('.form-group').hide();
 										$('#id_end_date').prop('disabled', true).closest('.form-group').hide();
 										$('#id_start_work_date').prop('disabled', true).closest('.form-group').hide();
+									}
+								});
+								// Pada perubahan is_afternoon
+								$('#id_is_afternoon').change(function () {
+									if ($(this).prop('checked')) {
+										// Jika is_afternoon samadengan Afternoon, aktifkan start_work_date
+										$('#id_start_work_date').prop('disabled', false).closest('.form-group').show();
+									}else {
+										// Jika is_afternoon samadengan Morning, nonaktifkan start_work_date
+										$('#id_start_work_date').prop('disabled', false).closest('.form-group').hide();
 									}
 								});
 							});

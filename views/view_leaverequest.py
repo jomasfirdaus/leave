@@ -10,6 +10,7 @@ from leave.forms import RequestLeaveForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 from custom.utils import getlastid
+from django.db.models import F, Sum
 
 
 #Your Code Here
@@ -48,20 +49,69 @@ def listaleaverequest(request):
     data_leave = []
 
     for leave in leave_type:
-        history_leave = LeaveRequest.objects.filter(contract=contract, leavetype=leave, start_date__year=today.year, is_draft=False, category__in=['0','1'], RequestLeaveAproveleaverequest__status='Acepted')
-        history_leave_half = LeaveRequest.objects.filter(contract=contract, leavetype=leave, start_date__year=today.year, is_draft=False, category='2', RequestLeaveAproveleaverequest__status='Acepted').count()
-        pending_leave = LeaveRequest.objects.filter(contract=contract, leavetype=leave, start_date__year=today.year, is_draft=False, category__in=['0','1'], RequestLeaveAproveleaverequest__status='Review')
-        pending_leave_half = LeaveRequest.objects.filter(contract=contract, leavetype=leave, start_date__year=today.year, is_draft=False, category='2', RequestLeaveAproveleaverequest__status='Review').count()
+        history_leave = LeaveRequest.objects.filter(
+            contract=contract,
+            leavetype=leave,
+            start_date__year=today.year,
+            is_draft=False,
+            category__in=['0','1'],
+            RequestLeaveAproveleaverequest__status='Acepted'
+        ).annotate(
+            leave_days=Sum(
+                F('end_date') - F('start_date') + 1,
+                output_field=models.IntegerField()
+            )
+        )
+
+        history_leave_half = LeaveRequest.objects.filter(
+            contract=contract,
+            leavetype=leave,
+            start_date__year=today.year,
+            is_draft=False, category='2',
+            RequestLeaveAproveleaverequest__status='Acepted'
+        ).annotate(
+            leave_days=Sum(
+                F('end_date') - F('start_date') + 1,
+                output_field=models.IntegerField()
+            )
+        ).count()
+
+        pending_leave = LeaveRequest.objects.filter(
+            contract=contract,
+            leavetype=leave,
+            start_date__year=today.year,
+            is_draft=False,
+            category__in=['0','1'],
+            RequestLeaveAproveleaverequest__status='Review'
+        ).annotate(
+            leave_days=Sum(
+                F('end_date') - F('start_date') + 1,
+                output_field=models.IntegerField()
+            )
+        )
+
+        pending_leave_half = LeaveRequest.objects.filter(
+            contract=contract,
+            leavetype=leave,
+            start_date__year=today.year,
+            is_draft=False, category='2',
+            RequestLeaveAproveleaverequest__status='Review'
+        ).annotate(
+            leave_days=Sum(
+                F('end_date') - F('start_date') + 1,
+                output_field=models.IntegerField()
+            )
+        ).count()
 
         history_leave_half = 0.5 * history_leave_half
         pending_leave_half = 0.5 * pending_leave_half
 
         # Hitung jumlah hari untuk permintaan cuti yang diterima tanpa Sabtu dan Minggu
-        history_leave_days = sum(count_weekdays(leave.start_date, leave.end_date) for leave in history_leave)
+        history_leave_days = sum(count_weekdays(leave1.start_date, leave1.end_date) for leave1 in history_leave)
         history_leave_days += history_leave_half
 
         # Hitung jumlah hari untuk permintaan cuti yang masih menunggu tanpa Sabtu dan Minggu
-        pending_leave_days = sum(count_weekdays(leave.start_date, leave.end_date) for leave in pending_leave)
+        pending_leave_days = sum(count_weekdays(leave2.start_date, leave2.end_date) for leave2 in pending_leave)
         pending_leave_days += pending_leave_half
 
         balance_leave = leave.total - history_leave_days
@@ -101,7 +151,11 @@ def requestleave(request):
             if instance.category in ['0', '2']:  # '0' untuk 'Part Day', '2' untuk 'Half Day'
                 instance.end_date = instance.start_date
                 if instance.category == '2':
-                    instance.start_work_date = instance.start_date
+                    if instance.is_afternoon == False:
+                        instance.start_work_date = instance.start_date
+            
+            if instance.category in ['0', '1']:
+                instance.is_afternoon = False
 
             instance.save()
             messages.success(request, ' DraftLeave Request.')  # Success message
@@ -171,67 +225,63 @@ def sendleaverequest(request, id):
 
     requestleave = LeaveRequest.objects.get(id=id)
 
-    if check_date(requestleave.start_date):
-        messages.success(request, f'Sorry! Your request date must be greater then today.')
-        return redirect('leave:listaleaverequest')
+    available_leave = 0
+    total_leave_days = 0
+
+    # Total Leave per Leave Type
+    leave_type = LeaveType.objects.get(id=requestleave.leavetype.id)
+    leave_type_days = int(leave_type.total)
+
+    # Count between Start Date and End Date
+    date2 = requestleave.end_date
+    date1 = requestleave.start_date
+    total_request_leave = date2 - date1
+
+    # Weekend and Holiday Check
+    for i in range(total_request_leave.days + 1):
+        day = date1 + timedelta(days=i)
+        if day.weekday() < 5: # 5 represents Saturday, 6 represents Sunday
+            total_leave_days += 1
+    
+    # Count Requested and Aproved Leave
+    history_leave = LeaveRequest.objects.filter(contract=contract, leavetype=leave_type, start_date__year=today.year, is_draft='False')
+
+    # Hitung jumlah hari untuk permintaan cuti yang diterima tanpa Sabtu dan Minggu
+    history_leave_days = sum(count_weekdays(leave.start_date, leave.end_date) for leave in history_leave)
+
+    if history_leave_days is not None:
+        available_leave = leave_type_days - history_leave_days
     else:
-        available_leave = 0
-        total_leave_days = 0
+        available_leave = leave_type_days
 
-        # Total Leave per Leave Type
-        leave_type = LeaveType.objects.get(id=requestleave.leavetype.id)
-        leave_type_days = int(leave_type.total)
-
-        # Count between Start Date and End Date
-        date2 = requestleave.end_date
-        date1 = requestleave.start_date
-        total_request_leave = date2 - date1
-
-        # Weekend and Holiday Check
-        for i in range(total_request_leave.days + 1):
-            day = date1 + timedelta(days=i)
-            if day.weekday() < 5: # 5 represents Saturday, 6 represents Sunday
-                total_leave_days += 1
-        
-        # Count Requested and Aproved Leave
-        history_leave = LeaveRequest.objects.filter(contract=contract, leavetype=leave_type, start_date__year=today.year, is_draft='False')
-
-        # Hitung jumlah hari untuk permintaan cuti yang diterima tanpa Sabtu dan Minggu
-        history_leave_days = sum(count_weekdays(leave.start_date, leave.end_date) for leave in history_leave)
-
-        if history_leave_days is not None:
-            available_leave = leave_type_days - history_leave_days
+    # Check Available Leave
+    if not LeaveRequest.objects.filter(contract=contract,leavetype=requestleave.leavetype, start_date__year=today.year).exists():
+        # Request Leave can not > Total Leave Type
+        if total_leave_days > leave_type_days:
+            messages.success(request, f'Sorry! Your request must be less then or equal {leave_type.total} days. Otherwise your request is/are {total_leave_days} days')
+            return redirect('leave:requestleave')
         else:
-            available_leave = leave_type_days
+            requestleave.is_draft = False
+            requestleave.save()
+            executeLeaveRequestSend(request, id)
 
-        # Check Available Leave
-        if not LeaveRequest.objects.filter(contract=contract,leavetype=requestleave.leavetype, start_date__year=today.year).exists():
-            # Request Leave can not > Total Leave Type
-            if total_leave_days > leave_type_days:
-                messages.success(request, f'Sorry! Your request must be less then or equal {leave_type.total} days. Otherwise your request is/are {total_leave_days} days')
-                return redirect('leave:requestleave')
-            else:
-                requestleave.is_draft = False
-                requestleave.save()
-                executeLeaveRequestSend(request, id)
-
-                messages.success(request, 'Request created successfully.')  # Success message
-                return redirect('leave:listaleaverequest')
-        elif available_leave > 0:
-            # Request Leave can not > Available Leave
-            if total_leave_days > available_leave:
-                messages.success(request, f'Sorry! Your request must be less then or equal {available_leave} days. Otherwise your request is/are {total_leave_days} days')
-                return redirect('leave:listaleaverequest')
-            else:
-                requestleave.is_draft = False
-                requestleave.save()
-                executeLeaveRequestSend(request, id)
-
-                messages.success(request, 'Request created successfully.')  # Success message
-                return redirect('leave:listaleaverequest')
-        else:
-            messages.success(request, f'Sorry! You have no balance Leave Available for Leave Type ({leave_type.name})')
+            messages.success(request, 'Request created successfully.')  # Success message
             return redirect('leave:listaleaverequest')
+    elif available_leave > 0:
+        # Request Leave can not > Available Leave
+        if total_leave_days > available_leave:
+            messages.success(request, f'Sorry! Your request must be less then or equal {available_leave} days. Otherwise your request is/are {total_leave_days} days')
+            return redirect('leave:listaleaverequest')
+        else:
+            requestleave.is_draft = False
+            requestleave.save()
+            executeLeaveRequestSend(request, id)
+
+            messages.success(request, 'Request created successfully.')  # Success message
+            return redirect('leave:listaleaverequest')
+    else:
+        messages.success(request, f'Sorry! You have no balance Leave Available for Leave Type ({leave_type.name})')
+        return redirect('leave:listaleaverequest')
 
 
 def cancelLeaveRequest(request, id):
@@ -244,18 +294,18 @@ def cancelLeaveRequest(request, id):
 def executeLeaveRequestSend(request, id):
     try:
         request_leave_aprove = RequestLeaveAprove.objects.filter(leaverequest__id=id)
-        request_leave_aprove.delete()
+        request_leave_aprove.delete(request.user)
     except ObjectDoesNotExist:
         print("RequestLeaveAprove instance not found")
     except Exception as e:
         print(f"An error occurred: {str(e)}")
 
-    unique_group_names = RequestSet.objects.filter(category__name='leave_request').values('group__name').distinct()
+    unique_group_names = RequestSet.objects.filter(category__name='leave').values('group__name').distinct()
     for group_name in unique_group_names:
         group_users = User.objects.filter(groups__name=group_name['group__name'], is_active=True)
         for user in group_users:
 
-            employeeuser = EmployeeUser.objects.filter(user=request.user).last()
+            employeeuser = EmployeeUser.objects.filter(user=user.id).last()
             contract = Contract.objects.filter(employeeuser=employeeuser).last()
 
             addtimeline = RequestLeaveAprove()

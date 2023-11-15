@@ -1,67 +1,73 @@
-from django.shortcuts import render,redirect
-from django.template.loader import render_to_string
-from django.http import HttpResponse, HttpResponseRedirect
-# from population.models import Population,DetailFamily,Family,Religion,Profession,Citizen,Aldeia,Village,User,Migration,Death,Migrationout,Temporary,ChangeFamily
-# from population.utils import getnewidp,getnewidf
-# from population.forms import Family_form,Family_form,FamilyPosition,Population_form,DetailFamily_form,CustumDetailFamily_form,Death_form,Migration_form,Migrationout_form,Changefamily_form
-from django.views.decorators.csrf import csrf_exempt
-import json
-from django.utils import timezone
-
-# from custom.utils import getnewid, getjustnewid, hash_md5, getlastid
-from django.db.models import Count
+from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.shortcuts import get_object_or_404
-from django.db.models import Q
-from datetime import date
-from django.http import JsonResponse
-
-from django.contrib.auth.views import LoginView
-from django.contrib.auth import authenticate, login, logout
-from rekrutamentu.forms import FileUploadForm
-from leave.models import *
-from custom.models import RequestSet
 
 from settingapps.utils import  decrypt_id, encrypt_id
-from django.core.paginator import Paginator
 
-from django.utils import translation
-from django.utils import timezone
-from datetime import datetime
-
-from django.contrib.auth.models import User, Group
-
-import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from purchase_request.forms import RequestOrderForm, ItemRequestForm
-from employee.models import EmployeeUser
-import logging
-from django.core.exceptions import ObjectDoesNotExist
+from leave.models import LeaveRequest, RequestLeaveAprove
+from leave.forms import LeaveRequestAproveForm
 
 
 
-def aceptedleaverequest(request, id):
-    id = decrypt_id(id)
-    itemprosses = RequestLeaveAprove.objects.get(id=id)
-    id_request = encrypt_id(str(itemprosses.leaverequest.id))
-    item = itemprosses
-    item.status = "Acepted"
-    last_aprove = RequestLeaveAprove.objects.filter(id=id, status="Acepted").count()
-    if  last_aprove < 1:
-        item.is_historical = True
-    item.save()
-    return redirect('leave:detalluleaverequest', id = id_request )
+def acceptedleaverequest(request, id):
+    form = LeaveRequestAproveForm()
+
+    id_decrypt = decrypt_id(id)
+    dados = RequestLeaveAprove.objects.get(id=id_decrypt)
+    idrequest = LeaveRequest.objects.get(id = dados.leaverequest.id)
+    idrequest2 = encrypt_id(str(idrequest.id))
+
+    if request.method == 'POST':
+        form = LeaveRequestAproveForm(request.POST, instance = dados )
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.status = "Acepted"
+            instance.updated_by = request.user
+            instance.save()
+            messages.success(request, 'Success!')  # Success message
+            return redirect('leave:detalluleaverequest', id = idrequest2)
+        else:
+            messages.success(request, 'Fail!')  # Success message
+            return redirect('leave:detalluleaverequest', id = idrequest2)
 
 
-def rijectedleaverequest(request, id):
-    id = decrypt_id(id)
-    itemprosses = RequestOrderAprove.objects.get(id=id)
-    id_request = encrypt_id(str(itemprosses.request_order.id))
-    item = itemprosses
-    item.status = "Rejected"
-    item.save()
-    return redirect('leave:detalluleaverequest', id = id_request )
+    context = {
+        "form" : form,
+        "asaun" : "aceita",
+        "dados" : dados ,
+        "pajina_leave" : "active",
+            }
+    return render(request, 'leave/leave__actiondescription.html',context)
+
+
+def rijectedpurchaserequest(request, id):
+    form = LeaveRequestAproveForm()
+
+    id_decrypt = decrypt_id(id)
+    dados = RequestLeaveAprove.objects.get(id=id_decrypt)
+    idrequest = LeaveRequest.objects.get(id = dados.leaverequest.id)
+    idrequest2 = encrypt_id(str(idrequest.id))
+
+    if request.method == 'POST':
+        form = LeaveRequestAproveForm(request.POST, instance = dados )
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.status = "Rejected"
+            instance.updated_by = request.user
+            instance.save()
+            messages.success(request, 'Success!')  # Success message
+            return redirect('leave:detalluleaverequest', id = idrequest2)
+        else:
+            messages.success(request, 'Fail!')  # Success message
+            return redirect('leave:detalluleaverequest', id = idrequest2)
+
+
+    context = {
+        "form" : form,
+        "asaun" : "rejeita",
+        "dados" : dados ,
+        "pajina_leave" : "active",
+            }
+    return render(request, 'leave/leave__actiondescription.html',context)
 
 
 
