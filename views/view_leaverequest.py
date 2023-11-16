@@ -43,7 +43,7 @@ def listaleaverequest(request):
     data = EmployeeUser.objects.get(user=request.user.id, user__is_active = True)
     contract =Contract.objects.get(employeeuser=data, is_active=True)
     today = datetime.today()
-    dadosta = LeaveRequest.objects.filter(contract=contract).order_by('-id')
+    dadosta = LeaveRequest.objects.filter(contract=contract, created_at__year=today.year).order_by('-id')
 
     leave_type = LeaveType.objects.filter(is_active=True)
     data_leave = []
@@ -55,7 +55,7 @@ def listaleaverequest(request):
             start_date__year=today.year,
             is_draft=False,
             category__in=['0','1'],
-            RequestLeaveAproveleaverequest__status='Acepted'
+            is_aproved=True
         ).annotate(
             leave_days=Sum(
                 F('end_date') - F('start_date') + 1,
@@ -68,7 +68,7 @@ def listaleaverequest(request):
             leavetype=leave,
             start_date__year=today.year,
             is_draft=False, category='2',
-            RequestLeaveAproveleaverequest__status='Acepted'
+            is_aproved=True
         ).annotate(
             leave_days=Sum(
                 F('end_date') - F('start_date') + 1,
@@ -82,7 +82,7 @@ def listaleaverequest(request):
             start_date__year=today.year,
             is_draft=False,
             category__in=['0','1'],
-            RequestLeaveAproveleaverequest__status='Review'
+            is_aproved=False
         ).annotate(
             leave_days=Sum(
                 F('end_date') - F('start_date') + 1,
@@ -94,8 +94,9 @@ def listaleaverequest(request):
             contract=contract,
             leavetype=leave,
             start_date__year=today.year,
-            is_draft=False, category='2',
-            RequestLeaveAproveleaverequest__status='Review'
+            is_draft=False,
+            category='2',
+            is_aproved=False
         ).annotate(
             leave_days=Sum(
                 F('end_date') - F('start_date') + 1,
@@ -261,9 +262,9 @@ def sendleaverequest(request, id):
             messages.success(request, f'Sorry! Your request must be less then or equal {leave_type.total} days. Otherwise your request is/are {total_leave_days} days')
             return redirect('leave:requestleave')
         else:
+            executeLeaveRequestSend(request, id)
             requestleave.is_draft = False
             requestleave.save()
-            executeLeaveRequestSend(request, id)
 
             messages.success(request, 'Request created successfully.')  # Success message
             return redirect('leave:listaleaverequest')

@@ -8,8 +8,10 @@ from leave.forms import LeaveRequestAproveForm
 
 
 
-def acceptedleaverequest(request, id):
+def acceptedleaverequest(request, id, last):
     form = LeaveRequestAproveForm()
+
+    last = decrypt_id(last)
 
     id_decrypt = decrypt_id(id)
     dados = RequestLeaveAprove.objects.get(id=id_decrypt)
@@ -23,6 +25,9 @@ def acceptedleaverequest(request, id):
             instance.status = "Acepted"
             instance.updated_by = request.user
             instance.save()
+            if last == 'last':
+                idrequest.is_aproved=True
+                idrequest.save()
             messages.success(request, 'Success!')  # Success message
             return redirect('leave:detalluleaverequest', id = idrequest2)
         else:
@@ -54,6 +59,8 @@ def rijectedpurchaserequest(request, id):
             instance.status = "Rejected"
             instance.updated_by = request.user
             instance.save()
+            idrequest.is_draft = True
+            idrequest.save()
             messages.success(request, 'Success!')  # Success message
             return redirect('leave:detalluleaverequest', id = idrequest2)
         else:

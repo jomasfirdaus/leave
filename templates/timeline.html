@@ -38,11 +38,17 @@
                               <br>
                               <span class="cd-timeline__date ">  
 
-                                    {% if dados.status == "Acepted" or  dados.status == "Rejected"  %}
-                                    Aproved <br> {{dados.description|safe}}
+                                    {% if dados.status == "Acepted"  %}
+                                          Aproved <br> {{dados.description|safe}}
+                                    {% elif dados.status == "Rejected" %}
+                                          Rejected <br> {{dados.description|safe}}]
                                     {% else %}
-                                    <a href="{% url 'leave:acceptedleaverequest' dados.id|encrypt_id_tag %}" id="AceptedButton" class="btn btn-primary btn-sm">Accept </a>  &nbsp;  
-                                    <a href="{% url 'leave:rijectedpurchaserequest' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm">Reject</a>
+                                          {% if forloop.last %}
+                                          <a href="{% url 'leave:acceptedleaverequest' dados.id|encrypt_id_tag 'last'|encrypt_id_tag %}" id="AceptedButton" class="btn btn-primary btn-sm">Accept </a>  &nbsp;  
+                                          {% else %}
+                                          <a href="{% url 'leave:acceptedleaverequest' dados.id|encrypt_id_tag 'nlast'|encrypt_id_tag %}" id="AceptedButton" class="btn btn-primary btn-sm">Accept </a>  &nbsp;  
+                                          {% endif %}
+                                          <a href="{% url 'leave:rijectedpurchaserequest' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm">Reject</a>
                                     {% endif %}  </span>
                               {% else %}
 
@@ -52,7 +58,11 @@
                                           {% if dados.status == "Acepted" or  dados.status == "Rejected"  %}
                                                 Aproved <br> {{dados.description|safe}}
                                           {% else %}
-                                          <a href="{% url 'leave:acceptedleaverequest' dados.id|encrypt_id_tag %}" id="AceptedButton" class="btn btn-primary btn-sm">Accept</a>&nbsp;
+                                          {% if forloop.last %}
+                                          <a href="{% url 'leave:acceptedleaverequest' dados.id|encrypt_id_tag 'last'|encrypt_id_tag %}" id="AceptedButton" class="btn btn-primary btn-sm">Accept </a>  &nbsp;  
+                                          {% else %}
+                                          <a href="{% url 'leave:acceptedleaverequest' dados.id|encrypt_id_tag 'nlast'|encrypt_id_tag %}" id="AceptedButton" class="btn btn-primary btn-sm">Accept </a>  &nbsp;  
+                                          {% endif %}
                                           <a href="{% url 'leave:rijectedpurchaserequest' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm">Reject</a>
                                           {% endif %}
                                     </span>

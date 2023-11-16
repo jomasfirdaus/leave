@@ -131,18 +131,11 @@
 																	{% if dados.is_draft %}
 																		Draft | <a href="{% url 'leave:sendleaverequest' dados.id|encrypt_id_tag %}" class="btn btn-primary btn-sm" > Send  <i class="far fa-paper-plane"></i>  </a>
 																	{% else %}
-																		{% if dados.RequestLeaveAproveleaverequest %}
-																			{% for request_leave_approve in dados.RequestLeaveAproveleaverequest.all %}
-																				{% if request_leave_approve.status == 'Acepted' %}
-																					Aproved: 
-																				{% elif request_leave_approve.status == 'Rejected' %}
-																					Rejected: 
-																				{% elif request_leave_approve.status == 'Review' %}
-																					Pending: 
-																				{% endif %}
-																				{{request_leave_approve.contract.position}} {{request_leave_approve.contract.department}} <br>
-																			{% endfor %}
-																		{% endif %}																															
+																		{% if dados.is_aproved %}
+																			Aproved
+																		{% else %}
+																			Pending
+																		{% endif %}																														
 																	{% endif %}
 																</td>																													
 																<td>

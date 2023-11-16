@@ -49,6 +49,7 @@ class LeaveRequest(models.Model):
     start_work_date = models.DateField(null=True, blank=True)
     is_draft = models.BooleanField(default=True)
     is_afternoon = models.BooleanField(default=False)
+    is_aproved = models.BooleanField(default=False)
     
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="LeaveRequestcreatedby")
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)

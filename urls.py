@@ -13,7 +13,7 @@ urlpatterns = [
 	path('send/leave/request/<str:id>/', views.sendleaverequest, name='sendleaverequest'),
 	path('cancel/leave/request/<str:id>/', views.cancelLeaveRequest, name='cancelLeaveRequest'),
     
-	path('accept/leave/request/<str:id>/', views.acceptedleaverequest, name='acceptedleaverequest'),
+	path('accept/leave/request/<str:id>/<str:last>/', views.acceptedleaverequest, name='acceptedleaverequest'),
 	path('reject/leave/request/<str:id>/', views.rijectedpurchaserequest, name='rijectedpurchaserequest'),
 ]
 
