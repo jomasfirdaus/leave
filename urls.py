@@ -15,5 +15,7 @@ urlpatterns = [
     
 	path('accept/leave/request/<str:id>/<str:last>/', views.acceptedleaverequest, name='acceptedleaverequest'),
 	path('reject/leave/request/<str:id>/', views.rijectedpurchaserequest, name='rijectedpurchaserequest'),
+    
+	path('detallu/leave/request/print/leave/<str:id>/', views.printleaverequest, name='printleaverequest'),
 ]
 

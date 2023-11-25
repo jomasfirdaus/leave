@@ -75,7 +75,7 @@ def listaleaverequest(request):
                 F('end_date') - F('start_date') + 1,
                 output_field=models.IntegerField()
             )
-        )
+        ).count()
 
         pending_leave = LeaveRequest.objects.filter(
             contract=contract,
@@ -103,11 +103,11 @@ def listaleaverequest(request):
                 F('end_date') - F('start_date') + 1,
                 output_field=models.IntegerField()
             )
-        )
+        ).count()
 
-        history_leave_half = sum(count_weekdays(leave1.start_date, leave1.end_date) for leave1 in history_leave_half)
+        # history_leave_half = sum(count_weekdays(leave1.start_date, leave1.end_date) for leave1 in history_leave_half)
         history_leave_half = 0.5 * history_leave_half
-        pending_leave_half = sum(count_weekdays(leave1.start_date, leave1.end_date) for leave1 in pending_leave_half)
+        # pending_leave_half = sum(count_weekdays(leave1.start_date, leave1.end_date) for leave1 in pending_leave_half)
         pending_leave_half = 0.5 * pending_leave_half
 
 

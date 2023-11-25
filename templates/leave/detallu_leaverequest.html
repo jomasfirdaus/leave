@@ -30,6 +30,9 @@
 	<div class="row">
 		<div class="  col-lg-12 col-md-12 col-sm-12 col-12">
 			<div class="card">
+				<legend>
+				 <h5 class="card-header">Leave Request  <div class='float-right'><a href="{% url 'leave:printleaverequest'  leaverequest.id|encrypt_id_tag  %}" class="btn btn-primary btn-sm" target="_blank">  <i class=" fas fa-print"></i> Print Dokument</a></div> </h5>
+				</legend>
 				<div class="card-header p-4">
 					<a class="pt-2 d-inline-block" href="index.html">
 						<b>Leave Type </b> : {{leaverequest.leavetype}} <br>
