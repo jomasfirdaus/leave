@@ -191,6 +191,18 @@ def editrequestleave(request, id):
         form = RequestLeaveForm(request.POST, instance=leaverequest)  # Menggunakan instance=leaverequest
         if form.is_valid():
             instance = form.save(commit=False)
+            instance.updated_by = User.objects.get(id=request.user.id)
+
+            # Jika kategori adalah 'Part Day' atau 'Half Day', set end_date sama dengan start_date
+            if instance.category in ['0', '2']:  # '0' untuk 'Part Day', '2' untuk 'Half Day'
+                instance.end_date = instance.start_date
+                if instance.category == '2':
+                    if instance.is_afternoon == False:
+                        instance.start_work_date = instance.start_date
+            
+            if instance.category in ['0', '1']:
+                instance.is_afternoon = False
+
             instance.save()
             messages.success(request, 'Request updated successfully.')  # Pesan sukses
             return redirect('leave:listaleaverequest')
