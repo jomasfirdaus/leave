@@ -279,8 +279,8 @@ def sendleaverequest(request, id):
             return redirect('leave:requestleave')
         else:
             requestleave.is_draft = False
-            requestleave.save()
             executeLeaveRequestSend(request, id)
+            requestleave.save()
 
             messages.success(request, 'Request created successfully.')  # Success message
             return redirect('leave:listaleaverequest')
@@ -291,8 +291,8 @@ def sendleaverequest(request, id):
             return redirect('leave:listaleaverequest')
         else:
             requestleave.is_draft = False
-            requestleave.save()
             executeLeaveRequestSend(request, id)
+            requestleave.save()
 
             messages.success(request, 'Request created successfully.')  # Success message
             return redirect('leave:listaleaverequest')
@@ -317,31 +317,11 @@ def executeLeaveRequestSend(request, id):
     except Exception as e:
         print(f"An error occurred: {str(e)}")
 
-    # unique_group_names = RequestSet.objects.filter(category__name='leave').values('group__name')
-    # for group_name in unique_group_names:
-    #     group_users = User.objects.filter(groups__name=group_name['group__name'], is_active=True)
-    #     for user in group_users:
-
-    #         employeeuser = EmployeeUser.objects.filter(user=user.id).last()
-    #         contract = Contract.objects.filter(employeeuser=employeeuser).last()
-
-    #         addtimeline = RequestLeaveAprove()
-    #         addtimeline.leaverequest = LeaveRequest.objects.get(id=id)
-    #         addtimeline.contract = contract
-    #         addtimeline.status = "Review"
-    #         addtimeline.created_by = request.user
-    #         try:
-    #             addtimeline.save()
-    #         except Exception as e:
-    #             logger.error(f"Error saving RequestLeaveAprove: {str(e)}")
-
     unique_group_names = RequestSet.objects.filter(category__name='leave',level__name=request.user.groups.all()[0].name)
     
-
     for group_name in unique_group_names.iterator():
         contract = Contract.objects.get(employeeuser__user__groups__name=group_name.group.name, employeeuser__user__is_active=True)
 
-    
         addtimeline = RequestLeaveAprove()
         addtimeline.leaverequest = LeaveRequest.objects.get(id=id)
         addtimeline.contract = contract
@@ -353,4 +333,4 @@ def executeLeaveRequestSend(request, id):
         except Exception as e:
             print(e)
             messages.success(request, 'Falhansu teknika favor manda fali')  
-            # return redirect('purchase_request:listapurchaserequest')
+            return redirect('leave:listaleaverequest')
