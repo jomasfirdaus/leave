@@ -320,7 +320,7 @@ def executeLeaveRequestSend(request, id):
     unique_group_names = RequestSet.objects.filter(category__name='leave',level__name=request.user.groups.all()[0].name)
     
     for group_name in unique_group_names.iterator():
-        contract = Contract.objects.get(employeeuser__user__groups__name=group_name.group.name, employeeuser__user__is_active=True)
+        contract = Contract.objects.get(employeeuser__user__groups__name=group_name.group.name, employeeuser__user__is_active=True, is_active=True)
 
         addtimeline = RequestLeaveAprove()
         addtimeline.leaverequest = LeaveRequest.objects.get(id=id)
